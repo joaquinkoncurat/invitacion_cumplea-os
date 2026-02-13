@@ -1,15 +1,971 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Invitación de Cumpleaños - Confirmación</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-  <!DOCTYPE html>
-  <html lang="en">
-    <head>
-      <meta charset="UTF-8" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>Formulario de invitación divertido</title>
-    </head>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      transition: background 0.5s ease;
+    }
 
-    <body>
-      <div id="root"></div>
-      <script type="module" src="/src/main.tsx"></script>
-    </body>
-  </html>
-  
+    .card {
+      background: white;
+      border-radius: 1.5rem;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      padding: 2rem;
+      max-width: 42rem;
+      width: 100%;
+      animation: slideIn 0.4s ease;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .step-indicator {
+      font-size: 0.875rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 8px;
+      background: #e5e7eb;
+      border-radius: 9999px;
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 9999px;
+      transition: width 0.3s ease;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 900;
+      margin-bottom: 1rem;
+      background: linear-gradient(to right, #9333ea, #ec4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    h2 {
+      font-size: 2rem;
+      font-weight: 900;
+      color: #1f2937;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      color: #6b7280;
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+    }
+
+    .info-box {
+      background: linear-gradient(to right, #f3e8ff, #fce7f3);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .info-box .info-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #374151;
+      font-weight: bold;
+      margin: 0.25rem 0;
+    }
+
+    label {
+      display: block;
+      font-size: 1rem;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+      color: #374151;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    textarea {
+      width: 100%;
+      padding: 1rem 1.25rem;
+      font-size: 1.125rem;
+      border: 2px solid #d1d5db;
+      border-radius: 0.75rem;
+      margin-bottom: 1rem;
+      transition: border-color 0.2s;
+    }
+
+    input:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #9333ea;
+    }
+
+    textarea {
+      min-height: 6rem;
+      resize: vertical;
+    }
+
+    .option-card {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1rem;
+      border: 2px solid #d1d5db;
+      border-radius: 0.75rem;
+      margin-bottom: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .option-card:hover {
+      border-color: #9333ea;
+      background: #fdf4ff;
+    }
+
+    .option-card.selected {
+      border-color: #9333ea;
+      background: #fdf4ff;
+    }
+
+    .option-card input[type="radio"],
+    .option-card input[type="checkbox"] {
+      width: 1.25rem;
+      height: 1.25rem;
+      cursor: pointer;
+    }
+
+    .option-card label {
+      margin: 0;
+      cursor: pointer;
+      flex: 1;
+      font-size: 1.125rem;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 1rem 1.5rem;
+      font-size: 1.25rem;
+      font-weight: bold;
+      border: none;
+      border-radius: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary {
+      background: linear-gradient(to right, #9333ea, #ec4899);
+      color: white;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: linear-gradient(to right, #7e22ce, #db2777);
+      transform: translateY(-1px);
+      box-shadow: 0 10px 20px rgba(147, 51, 234, 0.3);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .slider-container {
+      margin: 1.5rem 0;
+    }
+
+    .slider-value {
+      font-size: 3rem;
+      font-weight: 900;
+      text-align: center;
+      background: linear-gradient(to right, #ea580c, #dc2626);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 8px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: #e5e7eb;
+      border-radius: 9999px;
+      margin: 1rem 0;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 24px;
+      height: 24px;
+      background: linear-gradient(to right, #ea580c, #dc2626);
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 2px 10px rgba(234, 88, 12, 0.5);
+    }
+
+    .terms-box {
+      background: linear-gradient(to bottom right, #faf5ff, #fdf2f8);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .terms-box .term-item {
+      display: flex;
+      gap: 0.75rem;
+      margin: 1rem 0;
+      color: #374151;
+    }
+
+    .success-icon {
+      font-size: 5rem;
+      text-align: center;
+      margin-bottom: 1rem;
+      animation: bounce 1s ease infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+
+    .summary-item {
+      background: white;
+      padding: 1rem;
+      border-radius: 0.75rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .summary-item .label {
+      font-size: 0.875rem;
+      color: #6b7280;
+      margin-bottom: 0.25rem;
+    }
+
+    .summary-item .value {
+      font-size: 1.125rem;
+      font-weight: bold;
+      color: #1f2937;
+    }
+
+    .text-center { text-align: center; }
+    .text-sm { font-size: 0.875rem; }
+    .text-gray-500 { color: #6b7280; }
+    .mt-6 { margin-top: 1.5rem; }
+    .mb-2 { margin-bottom: 0.5rem; }
+
+    .screen {
+      display: none;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    .welcome-emoji {
+      font-size: 4rem;
+      text-align: center;
+      margin-bottom: 1rem;
+      animation: wiggle 2s ease-in-out infinite;
+    }
+
+    @keyframes wiggle {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(10deg); }
+      75% { transform: rotate(-10deg); }
+    }
+
+    .bringing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .bringing-item {
+      padding: 0.75rem;
+      border: 2px solid #d1d5db;
+      border-radius: 0.75rem;
+      cursor: pointer;
+      text-align: center;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .bringing-item:hover {
+      border-color: #9333ea;
+      background: #fdf4ff;
+    }
+
+    .bringing-item.selected {
+      border-color: #9333ea;
+      background: #fdf4ff;
+    }
+
+    .bringing-item.locked {
+      cursor: default;
+      opacity: 0.9;
+    }
+
+    .popup-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.6);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 1rem;
+    }
+
+    .popup-overlay.visible {
+      display: flex;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .popup-card {
+      background: white;
+      border-radius: 1.5rem;
+      padding: 2rem;
+      max-width: 28rem;
+      width: 100%;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.4);
+      animation: popIn 0.3s ease;
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.9); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .popup-timer {
+      font-size: 1.5rem;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 1rem;
+      color: #dc2626;
+    }
+
+    .popup-timer.warning { animation: pulse 1s ease infinite; }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    .popup-question {
+      font-size: 1.25rem;
+      font-weight: bold;
+      color: #1f2937;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .popup-options {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .popup-option {
+      padding: 0.75rem 1rem;
+      border: 2px solid #d1d5db;
+      border-radius: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 1rem;
+    }
+
+    .popup-option:hover {
+      border-color: #9333ea;
+      background: #fdf4ff;
+    }
+
+    .popup-error {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: #fee2e2;
+      border-radius: 0.75rem;
+      text-align: center;
+    }
+
+    .popup-error p {
+      color: #b91c1c;
+      font-weight: bold;
+      margin-bottom: 0.75rem;
+    }
+  </style>
+</head>
+<body>
+  <!-- Pantalla 0: Bienvenida -->
+  <div id="screen-0" class="screen active">
+    <div class="card text-center">
+      <div class="welcome-emoji">🎉</div>
+      <h1>¡CUMPLEAÑOS ÉPICO! 🎂</h1>
+      <p>Estás a punto de confirmar tu asistencia</p>
+
+      <div class="info-box">
+        <div class="info-item">📅 <span>21 de Febrero, 21hs</span></div>
+        <div class="info-item">📍 <span>Quincho - Obispo Oro 440</span></div>
+      </div>
+
+      <p style="font-size: 1.25rem; font-weight: bold;">⚠️ Completá este formulario para confirmar ⚠️</p>
+      <p class="text-sm text-gray-500">No es joda, si no completás esto, no entrás.<br>(Bueno sí entrás, pero haceme la onda)</p>
+
+      <button class="btn btn-primary" onclick="nextStep()">ARRANCAR LA AVENTURA 🚀</button>
+      <p class="text-sm text-gray-500 mt-6">* Experiencia interactiva.</p>
+    </div>
+  </div>
+
+  <!-- Pantalla 1: Nombre -->
+  <div id="screen-1" class="screen">
+    <div class="card">
+      <div class="step-indicator" style="color: #9333ea;">PREGUNTA 1/7</div>
+      <div class="progress-bar"><div class="progress-fill" style="width: 14%; background: linear-gradient(to right, #9333ea, #ec4899);"></div></div>
+      <h2>¿Cómo te llamás? 🤔</h2>
+      <p>Dale, tirame un nombre.</p>
+      <label for="name">Tu nombre (o alias)</label>
+      <input type="text" id="name" placeholder="Ej: El Tutan" oninput="formData.name = this.value; updateButton()">
+      <button class="btn btn-primary" id="btn-1" disabled onclick="nextStep()">SIGUIENTE →</button>
+    </div>
+  </div>
+
+  <!-- Pantalla 2: ¿Vas a venir? -->
+  <div id="screen-2" class="screen">
+    <div class="card">
+      <div class="step-indicator" style="color: #0d9488;">PREGUNTA 2/7</div>
+      <div class="progress-bar"><div class="progress-fill" style="width: 28%; background: linear-gradient(to right, #0d9488, #2563eb);"></div></div>
+      <h2 id="name-question">¿Vas a venir a mi cumple? 🎉</h2>
+      <p>Momento de la verdad. Elegí sabiamente.</p>
+      <div class="option-card" onclick="selectRadio('attending', 'si')">
+        <input type="radio" name="attending" id="attending-si" value="si">
+        <label for="attending-si">Sí, ahí estoy ✅</label>
+      </div>
+      <div class="option-card" onclick="selectRadio('attending', 'teaviso')">
+        <input type="radio" name="attending" id="attending-teaviso" value="teaviso">
+        <label for="attending-teaviso">Te aviso...</label>
+      </div>
+      <div class="option-card" onclick="selectRadio('attending', 'no')">
+        <input type="radio" name="attending" id="attending-no" value="no">
+        <label for="attending-no">No... (preparate para justificar) 😢</label>
+      </div>
+      <div id="loop-msg" style="display: none; padding: 1rem; background: #fef3c7; border-radius: 0.75rem; margin: 1rem 0; text-align: center;">
+        <p style="color: #b45309; font-weight: bold; margin: 0;">Hmm... andá pensándolo 😏 Elegí que sí vas a venir.</p>
+      </div>
+      <button class="btn btn-primary" id="btn-2" disabled onclick="nextStep()">SIGUIENTE →</button>
+    </div>
+  </div>
+
+  <!-- Pantalla 3: Vibe -->
+  <div id="screen-3b" class="screen">
+    <div class="card">
+      <div class="step-indicator" style="color: #ec4899;">PREGUNTA 3/7</div>
+      <div class="progress-bar"><div class="progress-fill" style="width: 42%; background: linear-gradient(to right, #ec4899, #dc2626);"></div></div>
+      <h2>¿Qué versión tuya viene? 🎭</h2>
+      <p>Necesito saber con qué personaje del lore voy a interactuar.</p>
+      <div class="option-card" onclick="selectRadio('vibe', 'tranqui')">
+        <input type="radio" name="vibe" id="vibe-tranqui" value="tranqui">
+        <label for="vibe-tranqui">😌 Tranquilo/a - Modo espectador</label>
+      </div>
+      <div class="option-card" onclick="selectRadio('vibe', 'fiesta')">
+        <input type="radio" name="vibe" id="vibe-fiesta" value="fiesta">
+        <label for="vibe-fiesta">🔥 Fiesta total - El alma de la party</label>
+      </div>
+      <div class="option-card" onclick="selectRadio('vibe', 'emocional')">
+        <input type="radio" name="vibe" id="vibe-emocional" value="emocional">
+        <label for="vibe-emocional">😭 Borracho/a emocional - "Te quiero mucho bro"</label>
+      </div>
+      <div class="option-card" onclick="selectRadio('vibe', 'npc')">
+        <input type="radio" name="vibe" id="vibe-npc" value="npc">
+        <label for="vibe-npc">🧍 NPC del fondo - Solo paso a saludar</label>
+      </div>
+      <button class="btn btn-primary" id="btn-3b" disabled onclick="nextStep()">SIGUIENTE →</button>
+    </div>
+  </div>
+
+  <!-- Pantalla 4: ¿Con quién venís? -->
+  <div id="screen-4" class="screen">
+    <div class="card">
+      <div class="step-indicator" style="color: #0d9488;">PREGUNTA 4/7</div>
+      <div class="progress-bar"><div class="progress-fill" style="width: 57%; background: linear-gradient(to right, #0d9488, #06b6d4);"></div></div>
+      <h2>¿Con quién venís? 🤝</h2>
+      <p>Decime si venís acompañado</p>
+      <label for="companions">Nombre del/de la acompañante</label>
+      <textarea id="companions" placeholder="Ej: Juan y el perro(si, el perro cuenta)" oninput="formData.companions = this.value"></textarea>
+      <button class="btn btn-primary" onclick="nextStep()">SIGUIENTE →</button>
+    </div>
+  </div>
+
+  <!-- Pantalla 6: ¿Qué vas a traer? -->
+  <div id="screen-6" class="screen">
+    <div class="card">
+      <div class="step-indicator" style="color: #dc2626;">PREGUNTA 5/7</div>
+      <div class="progress-bar"><div class="progress-fill" style="width: 71%; background: linear-gradient(to right, #dc2626, #ec4899);"></div></div>
+      <h2>¿Qué vas a traer? 🍻</h2>
+      <p>Elegí lo que vas a traer (hay un juego escondido...)</p>
+      <div id="bringing-container" class="bringing-grid"></div>
+      <button class="btn btn-primary" id="btn-5" onclick="nextStep()">SIGUIENTE →</button>
+    </div>
+  </div>
+
+  <!-- Pantalla 7: Nivel de fiesta -->
+  <div id="screen-7" class="screen">
+    <div class="card">
+      <div class="step-indicator" style="color: #ea580c;">PREGUNTA 6/7</div>
+      <div class="progress-bar"><div class="progress-fill" style="width: 85%; background: linear-gradient(to right, #ea580c, #dc2626);"></div></div>
+      <h2>Nivel de ganas de fiesta 🎊</h2>
+      <p>Del 1 al 10, ¿qué tan motivado/a venís?</p>
+      <div class="slider-container">
+        <div class="slider-value" id="party-level-value">5</div>
+        <p style="text-align: center; font-size: 1.25rem; font-weight: bold; margin-bottom: 1rem;" id="party-level-text">😊 Con onda</p>
+        <input type="range" id="partyLevel" min="1" max="10" value="5" oninput="updatePartyLevel(this.value)">
+        <div style="display: flex; justify-content: space-between; font-size: 0.875rem; color: #6b7280;">
+          <span>1 - Muerto</span>
+          <span>10 - Desatado</span>
+        </div>
+      </div>
+      <div id="level-high-msg" style="display: none; padding: 1rem; background: linear-gradient(to right, #ffedd5, #fed7aa); border-radius: 0.75rem; margin: 1rem 0; text-align: center;">
+        <p style="color: #c2410c; font-weight: bold; margin: 0;">🔥 Así se habla!</p>
+      </div>
+      <button class="btn btn-primary" onclick="nextStep()">SIGUIENTE →</button>
+    </div>
+  </div>
+
+  <!-- Pantalla 8: Términos -->
+  <div id="screen-8" class="screen">
+    <div class="card">
+      <div class="step-indicator" style="color: #9333ea;">PREGUNTA 7/7</div>
+      <div class="progress-bar"><div class="progress-fill" style="width: 100%; background: linear-gradient(to right, #9333ea, #ec4899);"></div></div>
+      <h2>Términos y Condiciones 📜</h2>
+      <p>Leé con atención (o no, total todos aceptamos sin leer).</p>
+      <div class="terms-box">
+        <div class="term-item">🎵 <span>Puede haber música <strong>FUERTE</strong>. Si sos sensible, traé tapones.</span></div>
+        <div class="term-item">✨ <span>Puede haber <strong>CAOS</strong>. Es parte de la experiencia.</span></div>
+        <div class="term-item">❤️ <span>Habrá <strong>DIVERSIÓN GARANTIZADA</strong>. O al menos lo intentamos.</span></div>
+        <div class="term-item">🕐 <span><strong>Fecha límite para confirmar: 16 de Febrero</strong>. No seas ese que avisa el mismo día.</span></div>
+      </div>
+      <div class="option-card" onclick="toggleCheckbox('acceptTerms', event)">
+        <input type="checkbox" id="acceptTerms">
+        <label for="acceptTerms">Acepto todo lo anterior y prometo no ser un/a amargo/a en la fiesta 🎉</label>
+      </div>
+      <button class="btn btn-primary" id="btn-8" disabled onclick="nextStep()">CONFIRMAR ASISTENCIA ✅</button>
+    </div>
+  </div>
+
+  <!-- Pantalla 9: Confirmación final -->
+  <div id="screen-9" class="screen">
+    <div class="card text-center">
+      <div class="success-icon" id="final-emoji">✅</div>
+      <h1 id="final-title">¡CONFIRMADO!</h1>
+      <div id="final-content"></div>
+      <div class="mt-6 pt-6" style="border-top: 1px solid #e5e7eb;">
+        <p class="text-sm text-gray-500">¿Querés cambiar algo? Recargá la página (F5) y empezá de nuevo</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Popup preguntas random -->
+  <div id="popup-overlay" class="popup-overlay">
+    <div class="popup-card">
+      <div id="popup-timer" class="popup-timer">10</div>
+      <div id="popup-question" class="popup-question"></div>
+      <div id="popup-options" class="popup-options"></div>
+      <div id="popup-error" class="popup-error" style="display: none;">
+        <p>⏱️ ¡Se te acabó el tiempo!</p>
+        <button class="btn btn-primary">Continuar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const FORMSPREE_ID = 'xgolabln';
+    const formData = { name: '', attending: '', noReason: '', vibe: '', guestCount: '', companions: '', bringing: [], partyLevel: 5, acceptTerms: false, attendingLoopCount: 0, otherClicks: {}, randomAnswers: [] };
+    let currentStep = 0, popupTimeout = null, popupTimerInterval = null, popupScheduled = false;
+    const RANDOM_QUESTIONS = [
+      { id: 'rompes', q: 'Si rompés algo, ¿qué hacés?', opts: [{ label: 'Me hago el boludo', score: 1 }, { label: 'Lo arreglo', score: 10 }, { label: 'Culpo a otro', score: 7 }, { label: 'Me voy', score: 5 }]},
+      { id: 'sanguches', q: '¿Sanguches de bondiola o choripanes?', opts: [{ label: 'Sanguches de bondiola', score: 5 }, { label: 'Choripanes', score: 5 }]},
+      { id: 'riverboca', q: '¿River o Boca?', opts: [{ label: 'River', score: 0 }, { label: 'Boca', score: 10 }]},
+      { id: 'mate', q: '¿Mate dulce o amargo?', opts: [{ label: 'Dulce', score: 0 }, { label: 'Amargo', score: 10 }, { label: 'Lo que haya', score: 5 }, { label: 'No tomo mate', score: 0 }]},
+      { id: 'cumple', q: '¿Cuándo es mi cumpleaños?', opts: [{ label: '17 de Febrero', score: 0 }, { label: '18 de Febrero', score: 0 }, { label: '19 de Febrero', score: 10 }, { label: '20 de Febrero', score: 0 }, { label: '21 de Febrero', score: 0 }]},
+      { id: 'hincha', q: 'Soy hincha de:', opts: [{ label: 'Boca', score: 8 }, { label: 'Giantx', score: 10 }, { label: 'Los Ratones', score: 2 }, { label: 'Scaloneta', score: 8 }]},
+      { id: 'bateria', q: '¿Cuánto dura tu batería social?', opts: [{ label: 'No vine con esa actualización del software', score: 0 }, { label: '2 horas', score: 5 }, { label: '3 horas', score: 7.5 }, { label: 'Toda la noche', score: 10 }]},
+      { id: 'venis', q: 'Venis desde:', opts: [{ label: 'Cordoba', score: 1 }, { label: 'Villa maria', score: 10 }, { label: 'Sierras chicas', score: 6 }]},
+      { id: 'serie', q: 'Mi serie favorita:', opts: [{ label: 'Game of Thrones', score: 10 }, { label: 'Breaking Bad', score: 8 }, { label: 'Las chicas del cable', score: 4 }, { label: 'Lost', score: 0 }]},
+      { id: 'pelicula', q: 'Pelicula favorita:', opts: [{ label: 'Gladiador', score: 10 }, { label: 'Soy leyenda', score: 8 }, { label: 'Transformers', score: 4 }, { label: 'Rapido y Furioso', score: 2 }]},
+      { id: 'cantante', q: 'Mi cantante favorito:', opts: [{ label: 'Fito Paez', score: 8 }, { label: 'Los Abuelos de la nada', score: 10 }, { label: 'Duki', score: 6 }, { label: 'Tini', score: 0 }]}
+    ];
+    const BRINGING_ITEMS = [{ id: 'fernet', label: 'Fernet', type: 'four' }, { id: 'vino', label: 'Vino', type: 'four' }, { id: 'birra', label: 'Birra', type: 'four' }, { id: 'vermu', label: 'Vermu', type: 'four' }, { id: 'sidra', label: 'Sidra', type: 'other' }, { id: 'vodka', label: 'Vodka con speed', type: 'other' }, { id: 'agua', label: 'Agua', type: 'other' }, { id: 'gaseosa', label: 'Gaseosa', type: 'other' }, { id: 'regalo', label: 'Regalo', type: 'regalo' }, { id: 'ginebra', label: 'Ginebra', type: 'other' }, { id: 'gin', label: 'Gin', type: 'other' }];
+    let bringingState = { order: [], selected: {}, regaloActivated: false };
+
+    function showScreen(screenId) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      const screen = document.getElementById(screenId);
+      if (screen) screen.classList.add('active');
+      const gradients = ['linear-gradient(135deg, #9333ea 0%, #ec4899 50%, #f97316 100%)', 'linear-gradient(135deg, #3b82f6 0%, #9333ea 50%, #ec4899 100%)', 'linear-gradient(135deg, #22c55e 0%, #14b8a6 50%, #3b82f6 100%)', 'linear-gradient(135deg, #ef4444 0%, #f97316 50%, #eab308 100%)', 'linear-gradient(135deg, #9333ea 0%, #ec4899 50%, #dc2626 100%)', 'linear-gradient(135deg, #2563eb 0%, #4f46e5 100%)', 'linear-gradient(135deg, #10b981 0%, #14b8a6 50%, #06b6d4 100%)', 'linear-gradient(135deg, #f97316 0%, #ef4444 50%, #ec4899 100%)', 'linear-gradient(135deg, #eab308 0%, #f97316 50%, #ef4444 100%)', 'linear-gradient(135deg, #4f46e5 0%, #9333ea 50%, #ec4899 100%)', 'linear-gradient(135deg, #22c55e 0%, #10b981 50%, #14b8a6 100%)'];
+      document.body.style.background = gradients[Math.min(currentStep, gradients.length - 1)];
+    }
+
+    function scheduleRandomPopup() {
+      if (popupScheduled || currentStep >= 8) return;
+      popupScheduled = true;
+      const delay = 4500 + Math.random() * 9000;
+      popupTimeout = setTimeout(() => {
+        popupScheduled = false;
+        if (currentStep >= 1 && currentStep < 8) showRandomPopup();
+      }, delay);
+    }
+
+    function showRandomPopup() {
+      const available = RANDOM_QUESTIONS.filter(q => !formData.randomAnswers.find(a => a.id === q.id));
+      if (available.length === 0) return;
+      const question = available[Math.floor(Math.random() * available.length)];
+      const overlay = document.getElementById('popup-overlay');
+      const timerEl = document.getElementById('popup-timer');
+      const questionEl = document.getElementById('popup-question');
+      const optionsEl = document.getElementById('popup-options');
+      const errorEl = document.getElementById('popup-error');
+      questionEl.textContent = question.q;
+      optionsEl.innerHTML = question.opts.map(opt => `<div class="popup-option" data-opt="${opt.label}" data-score="${opt.score}">${opt.label}</div>`).join('');
+      errorEl.style.display = 'none';
+      optionsEl.style.display = 'flex';
+      let timeLeft = 10;
+      timerEl.textContent = timeLeft;
+      timerEl.style.display = 'block';
+      timerEl.classList.remove('warning');
+      const closePopup = (answer, score) => {
+        clearInterval(popupTimerInterval);
+        formData.randomAnswers.push({ id: question.id, q: question.q, answer: answer || '(sin responder)', score: score !== undefined ? score : 0 });
+        optionsEl.querySelectorAll('.popup-option').forEach(o => o.onclick = null);
+        overlay.classList.remove('visible');
+        scheduleRandomPopup();
+      };
+      const showTimeoutError = () => {
+        clearInterval(popupTimerInterval);
+        timerEl.style.display = 'none';
+        optionsEl.style.display = 'none';
+        errorEl.style.display = 'block';
+        errorEl.querySelector('button').onclick = () => closePopup(null, 0);
+      };
+      popupTimerInterval = setInterval(() => {
+        timeLeft--;
+        timerEl.textContent = timeLeft > 0 ? timeLeft : 0;
+        if (timeLeft <= 2) timerEl.classList.add('warning');
+        if (timeLeft <= 0) showTimeoutError();
+      }, 1000);
+      optionsEl.querySelectorAll('.popup-option').forEach(opt => { opt.onclick = () => closePopup(opt.dataset.opt, parseInt(opt.dataset.score)); });
+      overlay.classList.add('visible');
+    }
+
+    function cancelPopupSchedule() { if (popupTimeout) clearTimeout(popupTimeout); popupScheduled = false; }
+
+    function showPendingQuestionsOneByOne(questions, onComplete) {
+      let index = 0;
+      function showNext() {
+        if (index >= questions.length) { onComplete(); return; }
+        const question = questions[index++];
+        showSingleQuestion(question, showNext);
+      }
+      showNext();
+    }
+
+    function showSingleQuestion(question, onClose) {
+      const overlay = document.getElementById('popup-overlay');
+      const timerEl = document.getElementById('popup-timer');
+      const questionEl = document.getElementById('popup-question');
+      const optionsEl = document.getElementById('popup-options');
+      const errorEl = document.getElementById('popup-error');
+      questionEl.textContent = question.q;
+      optionsEl.innerHTML = question.opts.map(opt => `<div class="popup-option" data-opt="${opt.label}" data-score="${opt.score}">${opt.label}</div>`).join('');
+      errorEl.style.display = 'none';
+      optionsEl.style.display = 'flex';
+      let timeLeft = 10;
+      timerEl.textContent = timeLeft;
+      timerEl.style.display = 'block';
+      timerEl.classList.remove('warning');
+      const closeQuestion = (answer, score) => {
+        clearInterval(popupTimerInterval);
+        formData.randomAnswers.push({ id: question.id, q: question.q, answer: answer || '(sin responder)', score: score !== undefined ? score : 0 });
+        optionsEl.querySelectorAll('.popup-option').forEach(o => o.onclick = null);
+        overlay.classList.remove('visible');
+        onClose();
+      };
+      const showTimeoutError = () => {
+        clearInterval(popupTimerInterval);
+        timerEl.style.display = 'none';
+        optionsEl.style.display = 'none';
+        errorEl.style.display = 'block';
+        errorEl.querySelector('button').onclick = () => closeQuestion(null, 0);
+      };
+      popupTimerInterval = setInterval(() => {
+        timeLeft--;
+        timerEl.textContent = timeLeft > 0 ? timeLeft : 0;
+        if (timeLeft <= 2) timerEl.classList.add('warning');
+        if (timeLeft <= 0) showTimeoutError();
+      }, 1000);
+      optionsEl.querySelectorAll('.popup-option').forEach(opt => { opt.onclick = () => closeQuestion(opt.dataset.opt, parseInt(opt.dataset.score)); });
+      overlay.classList.add('visible');
+    }
+
+    function nextStep() {
+      if (currentStep === 0) { currentStep = 1; showScreen('screen-1'); scheduleRandomPopup(); return; }
+      if (currentStep === 1) {
+        formData.name = document.getElementById('name').value.trim();
+        currentStep = 2;
+        showScreen('screen-2');
+        document.getElementById('loop-msg').style.display = 'none';
+        document.getElementById('name-question').textContent = `${formData.name}, ¿vas a venir a mi cumple? 🎉`;
+        document.querySelectorAll('#screen-2 .option-card').forEach(card => { card.classList.remove('selected'); if (card.querySelector('input').checked) card.classList.add('selected'); });
+        return;
+      }
+      if (currentStep === 2) {
+        formData.attending = document.querySelector('input[name="attending"]:checked')?.value || '';
+        if (formData.attending === 'teaviso' || formData.attending === 'no') {
+          formData.attendingLoopCount = (formData.attendingLoopCount || 0) + 1;
+          document.getElementById('loop-msg').style.display = 'block';
+          document.querySelectorAll('input[name="attending"]').forEach(r => { r.checked = false; });
+          formData.attending = '';
+          document.querySelectorAll('#screen-2 .option-card').forEach(c => c.classList.remove('selected'));
+          updateButton();
+          return;
+        }
+        currentStep = 3;
+        showScreen('screen-3b');
+        document.getElementById('loop-msg').style.display = 'none';
+        updateButton();
+        return;
+      }
+      if (currentStep === 3) {
+        formData.vibe = document.querySelector('input[name="vibe"]:checked')?.value || '';
+        currentStep = 4;
+        showScreen('screen-4');
+        document.getElementById('companions').value = formData.companions;
+        return;
+      }
+      if (currentStep === 4) {
+        formData.companions = document.getElementById('companions').value;
+        currentStep = 5;
+        showScreen('screen-6');
+        initBringingGame();
+        return;
+      }
+      if (currentStep === 5) {
+        formData.bringing = getBringingSelected();
+        currentStep = 6;
+        showScreen('screen-7');
+        document.getElementById('partyLevel').value = formData.partyLevel;
+        updatePartyLevel(formData.partyLevel);
+        return;
+      }
+      if (currentStep === 6) {
+        formData.partyLevel = parseInt(document.getElementById('partyLevel').value);
+        currentStep = 7;
+        showScreen('screen-8');
+        document.getElementById('acceptTerms').checked = formData.acceptTerms;
+        updateButton();
+        return;
+      }
+      if (currentStep === 7) {
+        formData.acceptTerms = document.getElementById('acceptTerms').checked;
+        const pendingQuestions = RANDOM_QUESTIONS.filter(q => !formData.randomAnswers.find(a => a.id === q.id));
+        if (pendingQuestions.length > 0) {
+          cancelPopupSchedule();
+          showPendingQuestionsOneByOne(pendingQuestions, () => {
+            currentStep = 8;
+            showScreen('screen-9');
+            renderFinalScreen();
+            sendSummaryToFormspree();
+          });
+        } else {
+          currentStep = 8;
+          cancelPopupSchedule();
+          if (popupTimerInterval) clearInterval(popupTimerInterval);
+          document.getElementById('popup-overlay').classList.remove('visible');
+          showScreen('screen-9');
+          renderFinalScreen();
+          sendSummaryToFormspree();
+        }
+        return;
+      }
+    }
+
+    function selectRadio(field, value) {
+      formData[field] = value;
+      document.querySelectorAll(`input[name="${field}"]`).forEach(r => { r.checked = r.value === value; });
+      document.querySelectorAll('.screen.active .option-card').forEach(card => { card.classList.remove('selected'); if (card.querySelector('input:checked')) card.classList.add('selected'); });
+      updateButton();
+    }
+
+    function toggleCheckbox(id, evt) {
+      if (evt && (evt.target.tagName === 'INPUT' || evt.target.tagName === 'LABEL')) return;
+      const el = document.getElementById(id === 'acceptTerms' ? 'acceptTerms' : 'bringing-' + id);
+      if (!el) return;
+      el.checked = !el.checked;
+      if (id === 'acceptTerms') { formData.acceptTerms = el.checked; document.querySelector('#acceptTerms')?.closest('.option-card')?.classList.toggle('selected', el.checked); }
+      updateButton();
+    }
+
+    function updatePartyLevel(value) {
+      formData.partyLevel = parseInt(value);
+      document.getElementById('party-level-value').textContent = value;
+      const texts = { 1: '😴 Modo zombie', 2: '😴 Modo zombie', 3: '😐 Tibio/a', 4: '😐 Tibio/a', 5: '😊 Con onda', 6: '😊 Con onda', 7: "🔥 Vamo' a darle", 8: "🔥 Vamo' a darle", 9: '🚀 DESCONTROL TOTAL', 10: '🚀 DESCONTROL TOTAL' };
+      document.getElementById('party-level-text').textContent = texts[value] || '😊 Con onda';
+      document.getElementById('level-high-msg').style.display = formData.partyLevel >= 9 ? 'block' : 'none';
+    }
+
+    function updateButton() {
+      let disabled = true;
+      if (currentStep === 1) disabled = !formData.name.trim();
+      else if (currentStep === 2) disabled = !formData.attending;
+      else if (currentStep === 3) disabled = !formData.vibe;
+      else if (currentStep === 7) disabled = !formData.acceptTerms;
+      const btnMap = { 1: 'btn-1', 2: 'btn-2', 3: 'btn-3b', 7: 'btn-8' };
+      const btnId = btnMap[currentStep];
+      if (btnId) { const btn = document.getElementById(btnId); if (btn) btn.disabled = disabled; }
+    }
+
+    function initBringingGame() {
+      bringingState = { order: [...BRINGING_ITEMS].sort(() => Math.random() - 0.5), selected: {}, regaloActivated: false };
+      renderBringingGame();
+    }
+
+    function renderBringingGame() {
+      const container = document.getElementById('bringing-container');
+      container.innerHTML = '';
+      bringingState.order.forEach((item) => {
+        const div = document.createElement('div');
+        div.className = 'bringing-item';
+        div.dataset.id = item.id;
+        div.textContent = item.label;
+        if (bringingState.selected[item.id]) div.classList.add('selected');
+        if (item.type === 'regalo' && bringingState.regaloActivated) div.classList.add('locked');
+        div.onclick = () => handleBringingClick(item);
+        container.appendChild(div);
+      });
+    }
+
+    function handleBringingClick(item) {
+      if (item.type === 'regalo') { if (bringingState.regaloActivated) return; return; }
+      if (!bringingState.regaloActivated) {
+        const regaloIdx = bringingState.order.findIndex(i => i.type === 'regalo');
+        const clickIdx = bringingState.order.findIndex(i => i.id === item.id);
+        [bringingState.order[regaloIdx], bringingState.order[clickIdx]] = [bringingState.order[clickIdx], bringingState.order[regaloIdx]];
+        bringingState.selected['regalo'] = true;
+        bringingState.regaloActivated = true;
+      } else if (item.type === 'four') {
+        bringingState.selected[item.id] = !bringingState.selected[item.id];
+      } else if (item.type === 'other') {
+        formData.otherClicks[item.id] = (formData.otherClicks[item.id] || 0) + 1;
+        const fourItems = bringingState.order.filter(i => i.type === 'four');
+        const unmarkedFour = fourItems.find(f => !bringingState.selected[f.id]);
+        const swapTarget = unmarkedFour || fourItems[0];
+        const otherIdx = bringingState.order.findIndex(i => i.id === item.id);
+        const fourIdx = bringingState.order.findIndex(i => i.id === swapTarget.id);
+        [bringingState.order[otherIdx], bringingState.order[fourIdx]] = [bringingState.order[fourIdx], bringingState.order[otherIdx]];
+      }
+      renderBringingGame();
+    }
+
+    function getBringingSelected() { return Object.keys(bringingState.selected).filter(k => bringingState.selected[k]); }
+
+    function renderFinalScreen() {
+      document.getElementById('final-emoji').textContent = '✅';
+      document.getElementById('final-title').textContent = '¡CONFIRMADO!';
+      document.getElementById('final-title').style.background = 'linear-gradient(to right, #22c55e, #14b8a6)';
+      document.getElementById('final-title').style.webkitBackgroundClip = 'text';
+      document.getElementById('final-title').style.webkitTextFillColor = 'transparent';
+      const content = document.getElementById('final-content');
+      const vibeText = { tranqui: 'Tranqui', fiesta: 'Fiesta Total', emocional: 'Emocional', npc: 'NPC' };
+      const bringLabels = { fernet: 'Fernet', vino: 'Vino', birra: 'Birra', vermu: 'Vermu', sidra: 'Sidra', vodka: 'Vodka con speed', agua: 'Agua', gaseosa: 'Gaseosa', regalo: 'Regalo', ginebra: 'Ginebra', gin: 'Gin' };
+      const otherLabels = { sidra: 'Sidra', vodka: 'Vodka con speed', agua: 'Agua', gaseosa: 'Gaseosa', ginebra: 'Ginebra', gin: 'Gin' };
+      const attendingLoopHtml = (formData.attendingLoopCount || 0) > 0 ? `<div class="summary-item" style="grid-column: 1/-1;"><div class="label">Veces que intentaste "No voy" o "Te aviso":</div><div class="value">${formData.attendingLoopCount} ${formData.attendingLoopCount === 1 ? 'vez' : 'veces'} 😏</div></div>` : '';
+      const otherClicksHtml = Object.keys(formData.otherClicks || {}).filter(k => formData.otherClicks[k] > 0).length > 0 ? `<div class="summary-item" style="grid-column: 1/-1;"><div class="label">Veces que apretaste (sin poder seleccionar):</div><div class="value">${Object.entries(formData.otherClicks).filter(([,v]) => v > 0).map(([k,v]) => `${otherLabels[k] || k}: ${v} ${v === 1 ? 'vez' : 'veces'}`).join(' • ')} 😂</div></div>` : '';
+      content.innerHTML = `<p style="font-size: 1.25rem; color: #374151;">¡Genial ${formData.name}! Ya estás en la lista 📝</p><div style="background: linear-gradient(to bottom right, #ecfdf5, #ccfbf1); border-radius: 1rem; padding: 1.5rem; margin: 1.5rem 0;"><div class="summary-grid"><div class="summary-item"><div class="label">Tu vibe:</div><div class="value">${formData.vibe ? vibeText[formData.vibe] || formData.vibe : '-'}</div></div><div class="summary-item"><div class="label">Vas a traer:</div><div class="value">${formData.bringing.map(b => bringLabels[b] || b).join(', ')}</div></div><div class="summary-item"><div class="label">Nivel de fiesta:</div><div class="value">🔥 ${formData.partyLevel}/10</div></div></div>${formData.companions ? `<div class="summary-item" style="grid-column: 1/-1;"><div class="label">Venís con:</div><div class="value">${formData.companions}</div></div>` : ''}${attendingLoopHtml}${otherClicksHtml}</div>${(formData.randomAnswers || []).length > 0 ? (() => { const total = (formData.randomAnswers || []).reduce((s, a) => s + (a.score || 0), 0); const maxPossible = 105; const nota = Math.max(1, Math.min(10, Math.round((total / maxPossible) * 10))); const notaMsg = nota <= 2 ? 'Desempeño desastroso' : nota <= 4 ? 'Bueno, podés venir' : nota <= 6 ? 'Somos conocidos' : nota <= 8 ? 'Somos buenos amigos' : 'Somos best friends'; return `<div style="background: linear-gradient(to bottom right, #fef3c7, #fde68a); border-radius: 1rem; padding: 1.5rem; margin: 1.5rem 0; text-align: left;"><p style="font-weight: bold; margin-bottom: 0.75rem;">📋 Preguntas random:</p>${formData.randomAnswers.map(a => `<div style="margin: 0.5rem 0;"><strong>${a.q}</strong><br><span style="color: #92400e;">→ ${a.answer}</span> ${a.score !== undefined ? `<span style="color: #16a34a; font-weight: bold;">(+${a.score})</span>` : ''}</div>`).join('')}<div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #fcd34d;"><strong>Puntaje total: ${total}/${maxPossible}</strong> (Nota: ${nota}/10)<br><strong style="font-size: 1.1rem; margin-top: 0.5rem; display: block;">${notaMsg}</strong></div></div>`; })() : ''}<div style="background: linear-gradient(to right, #f3e8ff, #fce7f3); border-radius: 1rem; padding: 1.5rem; margin: 1.5rem 0; text-align: left;"><p style="font-weight: bold; margin-bottom: 0.75rem;">📍 Info importante:</p><div class="info-item">📅 <strong>21 de Febrero, 21hs</strong></div><div class="info-item">📍 <strong>Quincho - Obispo Oro 440</strong></div><div class="info-item">🕐 Confirmá antes del <strong>16 de Febrero</strong></div></div><p style="font-size: 1.25rem; font-weight: bold;">¡Nos vemos ahí! 🚀</p><p style="color: #6b7280;">Si tenés algún cambio, avisame antes de la fecha límite.</p><button class="btn btn-primary" style="margin-top: 1rem;" onclick="sendSummaryByEmail()">📧 Enviar resumen por email (abre tu correo)</button><p style="font-size: 3rem; margin-top: 1rem;">🎂🎉🎊</p>`;
+    }
+
+    function getEmailSummary() {
+      const vibeText = { tranqui: 'Tranqui', fiesta: 'Fiesta Total', emocional: 'Emocional', npc: 'NPC' };
+      const bringLabels = { fernet: 'Fernet', vino: 'Vino', birra: 'Birra', vermu: 'Vermu', sidra: 'Sidra', vodka: 'Vodka con speed', agua: 'Agua', gaseosa: 'Gaseosa', regalo: 'Regalo', ginebra: 'Ginebra', gin: 'Gin' };
+      let lines = [`RESUMEN DE CONFIRMACIÓN - ${formData.name}`, '', '--- DATOS ---', `Nombre: ${formData.name}`, `Vibe: ${formData.vibe ? vibeText[formData.vibe] || formData.vibe : '-'}`, `Vas a traer: ${formData.bringing.map(b => bringLabels[b] || b).join(', ')}`, `Nivel de fiesta: ${formData.partyLevel}/10`];
+      if (formData.companions) lines.push(`Venís con: ${formData.companions}`);
+      if (formData.attendingLoopCount > 0) lines.push(`Veces "No voy"/"Te aviso": ${formData.attendingLoopCount}`);
+      if (Object.keys(formData.otherClicks || {}).some(k => formData.otherClicks[k] > 0)) lines.push(`Clics en opciones no seleccionables: ${Object.entries(formData.otherClicks).filter(([,v]) => v > 0).map(([k,v]) => `${k}: ${v}`).join(', ')}`);
+      if ((formData.randomAnswers || []).length > 0) { const total = formData.randomAnswers.reduce((s, a) => s + (a.score || 0), 0); const nota = Math.max(1, Math.min(10, Math.round((total / 105) * 10))); const notaMsg = nota <= 2 ? 'Desempeño desastroso' : nota <= 4 ? 'Bueno, podés venir' : nota <= 6 ? 'Somos conocidos' : nota <= 8 ? 'Somos buenos amigos' : 'Somos best friends'; lines.push('', '--- PREGUNTAS RANDOM ---'); formData.randomAnswers.forEach(a => lines.push(`${a.q} → ${a.answer} (+${a.score || 0})`)); lines.push('', `Puntaje total: ${total}/105 | Nota: ${nota}/10 | ${notaMsg}`); }
+      lines.push('', '--- INFO ---', '21 de Febrero, 21hs', 'Quincho - Obispo Oro 440');
+      return lines.join('\n');
+    }
+
+    function sendSummaryByEmail() { const subject = encodeURIComponent(`Confirmación cumpleaños - ${formData.name}`); const body = encodeURIComponent(getEmailSummary()); window.location.href = `mailto:joaquinkoncurat@gmail.com?subject=${subject}&body=${body}`; }
+
+    async function sendSummaryToFormspree() {
+      if (FORMSPREE_ID === 'YOUR_FORMSPREE_ID') return;
+      try { await fetch(`https://formspree.io/f/${FORMSPREE_ID}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ _subject: `Confirmación cumpleaños - ${formData.name}`, message: getEmailSummary(), nombre: formData.name }) }); } catch (e) { console.log('Error enviando email:', e); }
+    }
+
+    document.querySelectorAll('.option-card').forEach(card => {
+      card.addEventListener('click', (e) => {
+        if (e.target.tagName !== 'INPUT') {
+          const input = card.querySelector('input');
+          if (input && input.type === 'radio') {
+            input.checked = true;
+            const name = input.name, value = input.value;
+            formData[name === 'attending' ? 'attending' : 'vibe'] = value;
+            card.parentElement.querySelectorAll('.option-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+          }
+          updateButton();
+        }
+      });
+    });
+    document.querySelectorAll('input[name="attending"]').forEach(r => { r.addEventListener('change', function() { formData.attending = this.value; updateButton(); }); });
+    document.querySelectorAll('input[name="vibe"]').forEach(r => { r.addEventListener('change', function() { formData.vibe = this.value; updateButton(); }); });
+    document.getElementById('acceptTerms')?.addEventListener('change', function() { formData.acceptTerms = this.checked; this.closest('.option-card')?.classList.toggle('selected', this.checked); updateButton(); });
+  </script>
+</body>
+</html>
